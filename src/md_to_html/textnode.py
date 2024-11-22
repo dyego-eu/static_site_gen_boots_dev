@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 from enum import Enum, auto
 from typing import Optional
 
@@ -8,14 +9,16 @@ from dataclasses import dataclass
 
 from .htmlnode import LeafNode
 
+
 class TextNodeType(Enum):
     NORMAL = auto()
     BOLD = auto()
-    ITALIC  = auto()
+    ITALIC = auto()
     CODE = auto()
     LINK = auto()
     IMG = auto()
-    
+
+
 @dataclass
 class TextNode:
     content: str
@@ -44,26 +47,34 @@ class TextNode:
             case TextNodeType.IMG:
                 if self.url is None:
                     raise ValueError("TextNode with Image type MUST have url")
-                return LeafNode(tag="img", value="", props={"src": self.url, "alt":self.content})
+                return LeafNode(
+                    tag="img", value="", props={"src": self.url, "alt": self.content}
+                )
 
             case _:
                 raise ValueError()  # pragma: no cover
 
     def parse_delimiter(self, delimiter: str, node_type: TextNodeType) -> TextNodeList:
         re_delim = delimiter.replace("*", r"\*")
-        if re.search(fr"{re_delim}.*?{re_delim}", self.content) is None:
+        if re.search(rf"{re_delim}.*?{re_delim}", self.content) is None:
             return TextNodeList(self)
 
         start, delimited, rest = self.content.split(delimiter, 2)
         return TextNodeList(
             TextNode(content=start, node_type=self.node_type),
             TextNode(content=delimited, node_type=node_type),
-            *TextNode(content=rest, node_type=self.node_type).parse_delimiter(delimiter, node_type).nodes
+            *TextNode(content=rest, node_type=self.node_type)
+            .parse_delimiter(delimiter, node_type)
+            .nodes,
         )
-        
+
 
 class TextNodeList:
-    def __init__(self, *text_nodes: TextNode, text_node_list: list[TextNode] | None = None,):
+    def __init__(
+        self,
+        *text_nodes: TextNode,
+        text_node_list: list[TextNode] | None = None,
+    ):
         self.nodes = list(text_nodes) + (text_node_list or [])
 
     def parse_delimiter(self, delimiter: str, node_type: TextNodeType) -> TextNodeList:
@@ -75,4 +86,13 @@ class TextNodeList:
                 ],
                 [],
             )
+        )
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, TextNodeList):
+            raise ValueError("Can only compare TextNodeList with TextNodeList")
+
+        return (len(self.nodes) == len(other.nodes)) and all(
+            node_self == node_other
+            for node_self, node_other in zip(self.nodes, other.nodes)
         )
