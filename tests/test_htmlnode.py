@@ -1,6 +1,6 @@
 import pytest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 def test_html_nodes_equal():
@@ -60,3 +60,15 @@ def test_render_leafnode_w_props():
     leafnode = LeafNode(value="I'm a Leaf!", tag="p", props={"class":"cool-p", "style":"color:green;"})
     assert leafnode.to_html() == '<p class="cool-p" style="color:green;">I\'m a Leaf!</p>'
 
+
+def test_render_leafnode_wo_tag():
+    leafnode = LeafNode("I'm a Leaf!")
+    assert leafnode.to_html() == "I'm a Leaf!"
+
+
+def test_create_parent_node():
+    node_1 = LeafNode(tag="b", value="This is bold")
+    node_2 = LeafNode(value = "This is just normal text")
+    parent_node = ParentNode(tag="div", children=[node_1, node_2])
+
+    assert isinstance(parent_node, HTMLNode)

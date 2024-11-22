@@ -22,11 +22,37 @@ class HTMLNode:
 class LeafNode(HTMLNode):
     def __init__(
             self,
-            tag: str,
             value: str,
+            tag: str | None = None,
             props: dict[str, str] | None=None
     ) -> None:
         super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self) -> str:
+        if not self.tag:
+            return f"{self.value}"
+
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str,
+        children: list[HTMLNode],
+        props: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(tag=tag, children=children, props=props)
+        
+
+    def to_html(self) -> str:
+        
+        if self.children is None:
+            raise Exception()
+
+        return (
+            f"<{self.tag}{self.props_to_html()}>"
+            + "".join(child.to_html() for child in self.children)
+            + f"</{self.tag}>"
+        )
+
