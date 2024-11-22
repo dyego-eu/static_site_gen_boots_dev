@@ -1,6 +1,6 @@
 import pytest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from md_to_html.htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 def test_html_nodes_equal():

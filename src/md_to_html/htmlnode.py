@@ -16,15 +16,14 @@ class HTMLNode:
         if not self.props:
             return ""
 
-        return " " + " ".join([f'{prop}="{value}"' for prop, value in self.props.items()])
+        return " " + " ".join(
+            [f'{prop}="{value}"' for prop, value in self.props.items()]
+        )
 
 
 class LeafNode(HTMLNode):
     def __init__(
-            self,
-            value: str,
-            tag: str | None = None,
-            props: dict[str, str] | None=None
+        self, value: str, tag: str | None = None, props: dict[str, str] | None = None
     ) -> None:
         super().__init__(tag=tag, value=value, props=props)
 
@@ -43,10 +42,9 @@ class ParentNode(HTMLNode):
         props: dict[str, str] | None = None,
     ) -> None:
         super().__init__(tag=tag, children=children, props=props)
-        
 
     def to_html(self) -> str:
-        
+
         if self.children is None:
             raise Exception()
 
@@ -55,4 +53,3 @@ class ParentNode(HTMLNode):
             + "".join(child.to_html() for child in self.children)
             + f"</{self.tag}>"
         )
-
