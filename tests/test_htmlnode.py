@@ -72,3 +72,33 @@ def test_create_parent_node():
     parent_node = ParentNode(tag="div", children=[node_1, node_2])
 
     assert isinstance(parent_node, HTMLNode)
+
+
+def test_render_simple_parent_node():
+
+    node_1 = LeafNode(tag="b", value="This is bold")
+    node_2 = LeafNode(value = "This is just normal text")
+    parent_node = ParentNode(tag="div", children=[node_1, node_2])
+
+    expected_html = "<div><b>This is bold</b>This is just normal text</div>"
+    assert parent_node.to_html() == expected_html
+
+
+def test_nested_parent_node():
+    node_1 = LeafNode(tag="b", value="This is bold")
+    node_2 = LeafNode(value = "This is just normal text")
+    node_3 = LeafNode(tag="p", value="This is a paragraph", props={"class":"cool-p"})
+    node_4 = LeafNode(tag="a", value="Hyperlink", props={"href":"www.boot.dev"})
+
+    parent_1 = ParentNode(tag="div", props={"class":"paragraph-container"}, children=[node_1, node_2])
+    parent_2 = ParentNode(tag="div", props={"class":"super-container"}, children=[parent_1, node_3])
+    parent_3 = ParentNode(tag="div", children=[parent_2, node_4])
+
+    expected_html = (
+        '<div><div class="super-container"><div class="paragraph-container">'
+        '<b>This is bold</b>This is just normal text'
+        '</div><p class="cool-p">This is a paragraph</p>'
+        '</div><a href="www.boot.dev">Hyperlink</a></div>'
+    )
+    assert parent_3.to_html() == expected_html
+    
