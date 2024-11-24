@@ -5,18 +5,18 @@ from md_to_html import TextNode, TextNodeType, TextNodeList
 
 def test_textnodelist_equality():
     nodelist_1 = TextNodeList(
-        TextNode("normal text", TextNodeType.NORMAL),
+        TextNode("normal text"),
         TextNode("bold text", TextNodeType.BOLD),
     )
     nodelist_2 = TextNodeList(
-        TextNode("normal text", TextNodeType.NORMAL),
+        TextNode("normal text"),
         TextNode("bold text", TextNodeType.BOLD),
     )
     assert nodelist_1 == nodelist_2
 
 
 def test_textnodelist_inequality_error():
-    node = TextNode("normal text", TextNodeType.NORMAL)
+    node = TextNode("normal text")
     nodelist = TextNodeList(node)
 
     with pytest.raises(ValueError):
@@ -29,15 +29,15 @@ def test_complex_parse_delimiter():
         " almost as you are italian*. Let me `Throw some Code at you.`"
         " Psheew, psheew, **BOLD PSHEEW**"
     )
-    node = TextNode(example, TextNodeType.NORMAL)
+    node = TextNode(example)
     expected = TextNodeList(
-        TextNode("This is ", TextNodeType.NORMAL),
+        TextNode("This is "),
         TextNode("some very bold claims", TextNodeType.BOLD),
-        TextNode(" that you seem to be making. ", TextNodeType.NORMAL),
+        TextNode(" that you seem to be making. "),
         TextNode("It is almost as you are italian", TextNodeType.ITALIC),
-        TextNode(". Let me ", TextNodeType.NORMAL),
+        TextNode(". Let me "),
         TextNode("Throw some Code at you.", TextNodeType.CODE),
-        TextNode(" Psheew, psheew, ", TextNodeType.NORMAL),
+        TextNode(" Psheew, psheew, "),
         TextNode("BOLD PSHEEW", TextNodeType.BOLD),
     )
     assert node.parse_bold().parse_italic().parse_code() == expected
@@ -53,17 +53,17 @@ def test_complex_parse_multinode():
             "*It is almost as you are italian*. Let me `Throw some Code at you.`",
             TextNodeType.NORMAL,
         ),
-        TextNode(" Psheew, psheew, **BOLD PSHEEW**", TextNodeType.NORMAL),
+        TextNode(" Psheew, psheew, **BOLD PSHEEW**"),
     )
 
     expected = TextNodeList(
-        TextNode("This is ", TextNodeType.NORMAL),
+        TextNode("This is "),
         TextNode("some very bold claims", TextNodeType.BOLD),
-        TextNode(" that you seem to be making. ", TextNodeType.NORMAL),
+        TextNode(" that you seem to be making. "),
         TextNode("It is almost as you are italian", TextNodeType.ITALIC),
-        TextNode(". Let me ", TextNodeType.NORMAL),
+        TextNode(". Let me "),
         TextNode("Throw some Code at you.", TextNodeType.CODE),
-        TextNode(" Psheew, psheew, ", TextNodeType.NORMAL),
+        TextNode(" Psheew, psheew, "),
         TextNode("BOLD PSHEEW", TextNodeType.BOLD),
     )
     assert nodelist.parse_bold().parse_italic().parse_code() == expected
@@ -75,9 +75,9 @@ def test_simple_image_parse():
         TextNodeType.NORMAL,
     )
     expected = TextNodeList(
-        TextNode("this is a simple markdown ", TextNodeType.NORMAL),
+        TextNode("this is a simple markdown "),
         TextNode("alt_text for image", TextNodeType.IMG, url="www.image.com"),
-        TextNode(" with text after image", TextNodeType.NORMAL),
+        TextNode(" with text after image"),
     )
     assert node.parse_image() == expected
 
@@ -88,9 +88,9 @@ def test_simple_link_parse():
         TextNodeType.NORMAL,
     )
     expected = TextNodeList(
-        TextNode("this is a simple markdown ", TextNodeType.NORMAL),
+        TextNode("this is a simple markdown "),
         TextNode("this is a hyperlink", TextNodeType.LINK, url="www.image.com"),
-        TextNode(" with text after image", TextNodeType.NORMAL),
+        TextNode(" with text after image"),
     )
     assert node.parse_link() == expected
 
@@ -120,29 +120,29 @@ def test_full_complex_parse():
         " multiple ![cat image](www.cat_image.com). Even some more `code`"
     )
     expected = TextNodeList(
-        TextNode("This is an ", TextNodeType.NORMAL),
+        TextNode("This is an "),
         TextNode("example", TextNodeType.BOLD),
-        TextNode(" of a markdown file that ", TextNodeType.NORMAL),
+        TextNode(" of a markdown file that "),
         TextNode("contains italics", TextNodeType.ITALIC),
-        TextNode(" ", TextNodeType.NORMAL),
+        TextNode(" "),
         TextNode("bold in multiple places", TextNodeType.BOLD),
-        TextNode(", contains some ", TextNodeType.NORMAL),
+        TextNode(", contains some "),
         TextNode("code_variables", TextNodeType.CODE),
-        TextNode(" and even some ", TextNodeType.NORMAL),
+        TextNode(" and even some "),
         TextNode("images", url="www.url.com", node_type=TextNodeType.IMG),
-        TextNode(" and ", TextNodeType.NORMAL),
+        TextNode(" and "),
         TextNode("hyperlinks", url="www.url2.com", node_type=TextNodeType.LINK),
-        TextNode(". In fact, there are ", TextNodeType.NORMAL),
+        TextNode(". In fact, there are "),
         TextNode(
             "multiple", url="www.link_to_multiple.com", node_type=TextNodeType.LINK
         ),
-        TextNode(" links and multiple ", TextNodeType.NORMAL),
+        TextNode(" links and multiple "),
         TextNode("cat image", url="www.cat_image.com", node_type=TextNodeType.IMG),
-        TextNode(". Even some more ", TextNodeType.NORMAL),
+        TextNode(". Even some more "),
         TextNode("code", TextNodeType.CODE),
     )
 
-    assert TextNode(example_text, TextNodeType.NORMAL).parse_all() == expected
+    assert TextNode(example_text).parse_all() == expected
 
 
 def test_create_from_text():
@@ -154,25 +154,25 @@ def test_create_from_text():
         " multiple ![cat image](www.cat_image.com). Even some more `code`"
     )
     expected = TextNodeList(
-        TextNode("This is an ", TextNodeType.NORMAL),
+        TextNode("This is an "),
         TextNode("example", TextNodeType.BOLD),
-        TextNode(" of a markdown file that ", TextNodeType.NORMAL),
+        TextNode(" of a markdown file that "),
         TextNode("contains italics", TextNodeType.ITALIC),
-        TextNode(" ", TextNodeType.NORMAL),
+        TextNode(" "),
         TextNode("bold in multiple places", TextNodeType.BOLD),
-        TextNode(", contains some ", TextNodeType.NORMAL),
+        TextNode(", contains some "),
         TextNode("code_variables", TextNodeType.CODE),
-        TextNode(" and even some ", TextNodeType.NORMAL),
+        TextNode(" and even some "),
         TextNode("images", url="www.url.com", node_type=TextNodeType.IMG),
-        TextNode(" and ", TextNodeType.NORMAL),
+        TextNode(" and "),
         TextNode("hyperlinks", url="www.url2.com", node_type=TextNodeType.LINK),
-        TextNode(". In fact, there are ", TextNodeType.NORMAL),
+        TextNode(". In fact, there are "),
         TextNode(
             "multiple", url="www.link_to_multiple.com", node_type=TextNodeType.LINK
         ),
-        TextNode(" links and multiple ", TextNodeType.NORMAL),
+        TextNode(" links and multiple "),
         TextNode("cat image", url="www.cat_image.com", node_type=TextNodeType.IMG),
-        TextNode(". Even some more ", TextNodeType.NORMAL),
+        TextNode(". Even some more "),
         TextNode("code", TextNodeType.CODE),
     )
     assert TextNodeList.from_text(example_text) == expected

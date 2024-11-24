@@ -22,7 +22,7 @@ class TextNodeType(Enum):
 @dataclass
 class TextNode:
     content: str
-    node_type: TextNodeType
+    node_type: TextNodeType = TextNodeType.NORMAL
     url: Optional[str] = None
 
     img_regex: ClassVar[Pattern[str]] = re.compile(r"\!\[(.*?)\]\((.*?)\)")
@@ -54,11 +54,17 @@ class TextNode:
                     tag="img", value="", props={"src": self.url, "alt": self.content}
                 )
 
-            case _:
+            case _:  # pragma: no cover
                 raise ValueError()  # pragma: no cover
 
     def parse_all(self) -> TextNodeList:
         return TextNodeList(self).parse_all()
+
+    def remove_marker(self) -> TextNode:
+        self.content = "\n".join(
+            line.strip().split(" ", 1)[1] for line in self.content.split("\n")
+        )
+        return self
 
     def parse_bold(self) -> TextNodeList:
         return self._parse_delimiter("**", TextNodeType.BOLD)
@@ -121,8 +127,13 @@ class TextNodeList:
         self.nodes = list(text_nodes)
 
     @classmethod
-    def from_text(cls, text:str):
-        return TextNode(text, TextNodeType.NORMAL).parse_all()
+    def from_text(cls, text: str):
+        return TextNode(
+            text,
+        ).parse_all()
+
+    def to_html_nodes(self) -> list[HTMLNode]:
+        return [node.to_html_node() for node in self.nodes]
 
     def parse_all(self) -> TextNodeList:
         return self.parse_image().parse_link().parse_bold().parse_italic().parse_code()
