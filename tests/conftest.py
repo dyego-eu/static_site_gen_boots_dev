@@ -24,6 +24,10 @@ def snippet(request) -> str:
         ul_md = f.read().strip()
     with open(FIX / "ordered_list_snippet.md") as f:
         ol_md = f.read().strip()
+    with open(FIX / "ordered_todo_list.md") as f:
+        ol_todo_md = f.read().strip()
+    with open(FIX / "unordered_todo_list.md") as f:
+        ul_todo_md = f.read().strip()
     with open(FIX / "regular_paragraph.md") as f:
         paragraph_md = f.read().strip()
     OPTIONS = {
@@ -33,7 +37,9 @@ def snippet(request) -> str:
         "language_code": language_code_md,
         "quote": quote_md,
         "ul": ul_md,
+        "ul_todo": ul_todo_md,
         "ol": ol_md,
+        "ol_todo": ol_todo_md,
         "paragraph": paragraph_md,
     }
 
@@ -115,6 +121,83 @@ def expected_html_node(request) -> ParentNode:
         ],
     )
 
+    ul_todo_html_node = ParentNode(
+        tag="ul",
+        children=[
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox", "disabled": None},
+                    ),
+                    LeafNode(" this still has to be done"),
+                ],
+            ),
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox", "disabled": None},
+                    ),
+                    LeafNode(" this too"),
+                ],
+            ),
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox","checked":None, "disabled": None},
+                    ),
+                    LeafNode(" this has been completed"),
+                ],
+            ),
+        ],
+    )
+    ol_todo_html_node = ParentNode(
+        tag="ol",
+        children=[
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox", "disabled": None},
+                    ),
+                    LeafNode(" this still has to be done"),
+                ],
+            ),
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox", "disabled": None},
+                    ),
+                    LeafNode(" this too"),
+                ],
+            ),
+            ParentNode(
+                tag="li",
+                children=[
+                    LeafNode(
+                        value="",
+                        tag="input",
+                        props={"type": "checkbox", "disabled": None, "checked": None},
+                    ),
+                    LeafNode(" this has been completed"),
+                ],
+            ),
+        ],
+    )
+
     OPTIONS = {
         "code": code_html_node,
         "language_code": language_code_html_node,
@@ -122,7 +205,9 @@ def expected_html_node(request) -> ParentNode:
         "deep_heading": deep_heading_html_node,
         "quote": quote_html_node,
         "ul": ul_html_node,
+        "ul_todo": ul_todo_html_node,
         "ol": ol_html_node,
+        "ol_todo": ol_todo_html_node,
         "paragraph": paragraph_md,
     }
 

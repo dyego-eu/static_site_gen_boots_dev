@@ -17,6 +17,8 @@ class TextNodeType(Enum):
     CODE = auto()
     LINK = auto()
     IMG = auto()
+    MARKED_CHECKBOX = auto()
+    UNMARKED_CHECKBOX = auto()
 
 
 @dataclass
@@ -54,17 +56,31 @@ class TextNode:
                     tag="img", value="", props={"src": self.url, "alt": self.content}
                 )
 
+            case TextNodeType.MARKED_CHECKBOX:
+                return LeafNode(
+                    tag="input",
+                    value="",
+                    props={"type": "checkbox", "checked": None, "disabled": None},
+                )
+
+            case TextNodeType.UNMARKED_CHECKBOX:
+                return LeafNode(
+                    tag="input",
+                    value="",
+                    props={"type": "checkbox", "disabled": None},
+                )
             case _:  # pragma: no cover
                 raise ValueError()  # pragma: no cover
 
     def parse_all(self) -> TextNodeList:
         return TextNodeList(self).parse_all()
 
-    def remove_marker(self) -> TextNode:
-        self.content = "\n".join(
-            line.strip().split(" ", 1)[1] for line in self.content.split("\n")
+    def remove_marker(self) -> TextNodeList:
+        return TextNodeList(
+            TextNode(
+                "\n".join(line.split(" ", 1)[1] for line in self.content.split("\n"))
+            )
         )
-        return self
 
     def parse_bold(self) -> TextNodeList:
         return self._parse_delimiter("**", TextNodeType.BOLD)

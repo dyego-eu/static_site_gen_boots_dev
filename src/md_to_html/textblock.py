@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from md_to_html.htmlnode import HTMLNode, ParentNode
-from md_to_html.textnode import TextNode
+from md_to_html.textnode import TextNode, TextNodeType
 
 
 @dataclass
@@ -71,16 +71,37 @@ class Block:
         return self._list_to_html_node("ol")
 
     def _list_to_html_node(self, tag: Literal["ol", "ul"]) -> HTMLNode:
+        children = []
+        for line in self.lines:
+            line = self.remove_marker(line).rstrip()
+            child = (
+                TextNode(content=re.sub(r"^\[[ x]?\]", "", line))
+                .parse_all()
+                .to_html_nodes()
+            )
+            if re.match(r"^\[ ?\]", line):
+                child = [
+                    TextNode(
+                        content="", node_type=TextNodeType.UNMARKED_CHECKBOX
+                    ).to_html_node()
+                ] + child
+            elif re.match(r"^\[x\]", line):
+                child = [
+                    TextNode(
+                        content="", node_type=TextNodeType.MARKED_CHECKBOX
+                    ).to_html_node()
+                ] + child
+
+            children.append(child)
+
         return ParentNode(
             tag=tag,
-            children=[
-                ParentNode(
-                    tag="li",
-                    children=TextNode(line).remove_marker().parse_all().to_html_nodes(),
-                )
-                for line in self.lines
-            ],
+            children=[ParentNode(tag="li", children=child) for child in children],
         )
+
+    @staticmethod
+    def remove_marker(line: str) -> str:
+        return line.strip().split(" ", 1)[1]
 
     @property
     def lines(self) -> list[str]:
@@ -129,7 +150,7 @@ class BlockList:
         first_line, _ = (text + "\n").split("\n", 1)
         if not first_line.startswith("# "):
             raise ValueError("First line of markdown file should contain title")
-        
+
         return re.split(r"# ", first_line)[1].strip()
 
     def to_html_node(self) -> HTMLNode:

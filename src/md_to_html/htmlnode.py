@@ -8,7 +8,7 @@ class HTMLNode:
     tag: str | None = None
     value: str | None = None
     children: Sequence[HTMLNode] | None = None
-    props: dict[str, str] | None = None
+    props: dict[str, str | None] | None = None
 
     def to_html(self) -> str:
         raise NotImplementedError()  # pragma: no cover
@@ -18,13 +18,13 @@ class HTMLNode:
             return ""
 
         return " " + " ".join(
-            [f'{prop}="{value}"' for prop, value in self.props.items()]
+            [f'{prop}="{value}"' if value is not None else f" {prop}" for prop, value in self.props.items()]
         )
 
 
 class LeafNode(HTMLNode):
     def __init__(
-        self, value: str, tag: str | None = None, props: dict[str, str] | None = None
+        self, value: str, tag: str | None = None, props: dict[str, str | None] | None = None
     ) -> None:
         super().__init__(tag=tag, value=value, props=props)
 
@@ -40,7 +40,7 @@ class ParentNode(HTMLNode):
         self,
         tag: str,
         children: Sequence[HTMLNode],
-        props: dict[str, str] | None = None,
+        props: dict[str, str | None] | None = None,
     ) -> None:
         super().__init__(tag=tag, children=children, props=props)
 
