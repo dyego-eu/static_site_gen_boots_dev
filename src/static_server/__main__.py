@@ -1,7 +1,7 @@
 import pathlib
 import shutil
 
-from md_to_html.textblock import BlockList
+from .textblock import BlockList
 
 
 def main():

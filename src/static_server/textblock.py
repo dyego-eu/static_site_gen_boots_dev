@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from md_to_html.htmlnode import HTMLNode, ParentNode
-from md_to_html.textnode import TextNode, TextNodeType
+from .htmlnode import HTMLNode, ParentNode
+from .textnode import TextNode, TextNodeType
 
 
 @dataclass

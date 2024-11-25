@@ -10,3 +10,5 @@ test:
 			scripts/test.sh; \
 	)
 
+install:
+	pip install -e .
